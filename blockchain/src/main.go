@@ -14,6 +14,7 @@ import (
 	peer "github.com/libp2p/go-libp2p-core/peer"
 	pstore "github.com/libp2p/go-libp2p-core/peerstore"
 	ma "github.com/multiformats/go-multiaddr"
+	"github.com/seinsidler/scott-chain/blockchain/chain"
 )
 
 // difficulty of PoW
