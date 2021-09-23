@@ -3,9 +3,9 @@ package client
 import (
 	"time"
 
-	pbv1 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/pb"
-	pbv2 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/pb"
-	"github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/util"
+	pbv1 "scott-chain/p2p/protocol/circuitv1/pb"
+	pbv2 "scott-chain/p2p/protocol/circuitv2/pb"
+	"scott-chain/p2p/protocol/circuitv2/util"
 
 	"github.com/libp2p/go-libp2p-core/network"
 )

@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	pb "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/pb"
-	"github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/util"
+	pb "scott-chain/p2p/protocol/circuitv1/pb"
+	"scott-chain/p2p/protocol/circuitv2/util"
 
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/network"

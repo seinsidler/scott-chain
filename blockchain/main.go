@@ -2,6 +2,9 @@ package main
 
 import (
 	"bufio"
+	"scott-chain/blockchain/chain"
+
+	// "chain"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
@@ -20,7 +23,9 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	// "github.com/libp2p/go-libp2p"
-	libp2p "github.com/libp2p/go-libp2p"
+
+	libp2p "scott-chain"
+
 	crypto "github.com/libp2p/go-libp2p-core/crypto"
 	host "github.com/libp2p/go-libp2p-core/host"
 	net "github.com/libp2p/go-libp2p-core/network"
@@ -32,24 +37,24 @@ import (
 // difficulty of PoW
 const difficulty = 1
 
-// Block represents each 'item' in the blockchain
-type Block struct {
-	Index      int
-	Timestamp  string
-	BPM        int
-	Hash       string
-	PrevHash   string
-	Difficulty int
-	Nonce      string
-}
+// // Block represents each 'item' in the blockchain
+// type Block struct {
+// 	Index      int
+// 	Timestamp  string
+// 	BPM        int
+// 	Hash       string
+// 	PrevHash   string
+// 	Difficulty int
+// 	Nonce      string
+// }
 
 // Blockchain is a series of validated Blocks
-var Blockchain []Block
+var Blockchain []chain.Block
 
 var mutex = &sync.Mutex{}
 
 // make sure block is valid by checking index, and comparing the hash of the previous block
-func isBlockValid(newBlock, oldBlock Block) bool {
+func isBlockValid(newBlock, oldBlock chain.Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
 		return false
 	}
@@ -66,7 +71,7 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 }
 
 // SHA256 hashing
-func calculateHash(block Block) string {
+func calculateHash(block chain.Block) string {
 	record := strconv.Itoa(block.Index) + block.Timestamp + strconv.Itoa(block.BPM) + block.PrevHash + block.Nonce
 	h := sha256.New()
 	h.Write([]byte(record))
@@ -75,9 +80,9 @@ func calculateHash(block Block) string {
 }
 
 // create a new block using previous block's hash
-func generateBlock(oldBlock Block, BPM int) Block {
+func generateBlock(oldBlock chain.Block, BPM int) chain.Block {
 
-	var newBlock Block
+	var newBlock chain.Block
 
 	t := time.Now()
 
@@ -183,7 +188,7 @@ func readData(rw *bufio.ReadWriter) {
 		}
 		if str != "\n" {
 
-			chain := make([]Block, 0)
+			chain := make([]chain.Block, 0)
 			if err := json.Unmarshal([]byte(str), &chain); err != nil {
 				log.Fatal(err)
 			}
@@ -267,8 +272,8 @@ func isHashValid(hash string, difficulty int) bool {
 }
 func main() {
 	t := time.Now()
-	genesisBlock := Block{}
-	genesisBlock = Block{0, t.String(), 0, calculateHash(genesisBlock), "", difficulty, ""}
+	genesisBlock := chain.Block{}
+	genesisBlock = chain.Block{0, t.String(), 0, calculateHash(genesisBlock), "", difficulty, ""}
 
 	Blockchain = append(Blockchain, genesisBlock)
 

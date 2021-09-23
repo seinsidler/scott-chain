@@ -7,8 +7,9 @@ import (
 	"io"
 	"testing"
 
+	relayv1 "scott-chain/p2p/protocol/circuitv1/relay"
+
 	compatv1 "github.com/libp2p/go-libp2p-circuit"
-	relayv1 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/relay"
 
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/network"

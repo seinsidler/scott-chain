@@ -16,10 +16,12 @@ import (
 	"github.com/libp2p/go-libp2p-core/peerstore"
 	"github.com/libp2p/go-libp2p-core/pnet"
 
-	"github.com/libp2p/go-libp2p/config"
-	bhost "github.com/libp2p/go-libp2p/p2p/host/basic"
-	autorelay "github.com/libp2p/go-libp2p/p2p/host/relay"
-	holepunch "github.com/libp2p/go-libp2p/p2p/protocol/holepunch"
+	"scott-chain/config"
+
+	autorelay "scott-chain/p2p/host/relay"
+	holepunch "scott-chain/p2p/protocol/holepunch"
+
+	bhost "scott-chain/p2p/host/basic"
 
 	ma "github.com/multiformats/go-multiaddr"
 	madns "github.com/multiformats/go-multiaddr-dns"

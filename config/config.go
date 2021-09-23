@@ -17,11 +17,11 @@ import (
 	"github.com/libp2p/go-libp2p-core/transport"
 	"github.com/libp2p/go-libp2p-peerstore/pstoremem"
 
-	bhost "github.com/libp2p/go-libp2p/p2p/host/basic"
-	"github.com/libp2p/go-libp2p/p2p/host/relay"
-	routed "github.com/libp2p/go-libp2p/p2p/host/routed"
-	circuitv2 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/client"
-	"github.com/libp2p/go-libp2p/p2p/protocol/holepunch"
+	bhost "scott-chain/p2p/host/basic"
+	"scott-chain/p2p/host/relay"
+	routed "scott-chain/p2p/host/routed"
+	circuitv2 "scott-chain/p2p/protocol/circuitv2/client"
+	"scott-chain/p2p/protocol/holepunch"
 
 	autonat "github.com/libp2p/go-libp2p-autonat"
 	blankhost "github.com/libp2p/go-libp2p-blankhost"

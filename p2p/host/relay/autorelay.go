@@ -13,8 +13,8 @@ import (
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/libp2p/go-libp2p-core/routing"
 
-	basic "github.com/libp2p/go-libp2p/p2p/host/basic"
-	relayv1 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/relay"
+	basic "scott-chain/p2p/host/basic"
+	relayv1 "scott-chain/p2p/protocol/circuitv1/relay"
 
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"

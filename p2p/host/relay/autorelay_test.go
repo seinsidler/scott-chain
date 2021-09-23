@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"scott-chain/p2p/host/relay"
+	relayv1 "scott-chain/p2p/protocol/circuitv1/relay"
+
 	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/p2p/host/relay"
-	relayv1 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/relay"
 
 	"github.com/libp2p/go-libp2p-core/event"
 	"github.com/libp2p/go-libp2p-core/host"

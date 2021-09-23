@@ -3,8 +3,8 @@ package util
 import (
 	"errors"
 
-	pbv1 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv1/pb"
-	pbv2 "github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/pb"
+	pbv1 "scott-chain/p2p/protocol/circuitv1/pb"
+	pbv2 "scott-chain/p2p/protocol/circuitv2/pb"
 
 	"github.com/libp2p/go-libp2p-core/peer"
 

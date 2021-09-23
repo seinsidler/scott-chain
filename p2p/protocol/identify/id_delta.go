@@ -1,13 +1,14 @@
 package identify
 
 import (
+	"time"
+
 	"github.com/libp2p/go-libp2p-core/event"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/libp2p/go-libp2p-core/protocol"
-	"time"
 
-	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
+	pb "scott-chain/p2p/protocol/identify/pb"
 
 	"github.com/libp2p/go-msgio/protoio"
 )
