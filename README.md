@@ -14,6 +14,7 @@ Fixes:
 - The carrot in the console needs to show up when a block is found on another terminal
 - automatic node discovery or persistent node discovery
 - network needs to not shut down when one node fails!
+- ensure proof of work check is happening
 
 Future Plans:
 - Turn the blockchain history into a state (Merkle DAG)

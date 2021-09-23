@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"scott-chain/blockchain/chain"
 
 	// "chain"
@@ -96,11 +95,7 @@ func main() {
 			log.Fatalln(err)
 		}
 		// Create a buffered stream so that read and writes are non blocking.
-		rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
-
-		// Create a thread to read and write data.
-		go chain.WriteData(rw)
-		go chain.ReadData(rw)
+		chain.HandleStream(s)
 
 		select {} // hang forever
 
