@@ -7,8 +7,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	// "github.com/libp2p/go-libp2p"
 )
 
+// difficulty of PoW
+const Difficulty = 1
+// Block represents each 'item' in the blockchain
 type Block struct {
 	Index      int
 	Timestamp  string
@@ -18,9 +22,9 @@ type Block struct {
 	Difficulty int
 	Nonce      string
 }
-
+var Blockchain []Block
 // make sure block is valid by checking index, and comparing the hash of the previous block
-func isBlockValid(newBlock, oldBlock Block) bool {
+func IsBlockValid(newBlock, oldBlock Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
 		return false
 	}
@@ -29,7 +33,7 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 		return false
 	}
 
-	if calculateHash(newBlock) != newBlock.Hash {
+	if CalculateHash(newBlock) != newBlock.Hash {
 		return false
 	}
 
@@ -37,20 +41,16 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 }
 
 // SHA256 hashing
-func calculateHash(block Block) string {
+func CalculateHash(block Block) string {
 	record := strconv.Itoa(block.Index) + block.Timestamp + strconv.Itoa(block.BPM) + block.PrevHash + block.Nonce
 	h := sha256.New()
 	h.Write([]byte(record))
 	hashed := h.Sum(nil)
 	return hex.EncodeToString(hashed)
 }
-func isHashValid(hash string, difficulty int) bool {
-	prefix := strings.Repeat("0", difficulty)
-	return strings.HasPrefix(hash, prefix)
-}
 
 // create a new block using previous block's hash
-func generateBlock(oldBlock Block, BPM int) Block {
+func GenerateBlock(oldBlock Block, BPM int) Block {
 
 	var newBlock Block
 
@@ -60,23 +60,29 @@ func generateBlock(oldBlock Block, BPM int) Block {
 	newBlock.Timestamp = t.String()
 	newBlock.BPM = BPM
 	newBlock.PrevHash = oldBlock.Hash
-	newBlock.Hash = calculateHash(newBlock)
-	newBlock.Difficulty = difficulty
+	newBlock.Hash = CalculateHash(newBlock)
+	newBlock.Difficulty = Difficulty
 
 	for i := 0; ; i++ {
 		hex := fmt.Sprintf("%x", i)
 		newBlock.Nonce = hex
 		fmt.Println(newBlock.Nonce)
-		if !isHashValid(calculateHash(newBlock), newBlock.Difficulty) {
-			fmt.Println(calculateHash(newBlock), " word harder!")
+		if !IsHashValid(CalculateHash(newBlock), newBlock.Difficulty) {
+			fmt.Println(CalculateHash(newBlock), " word harder!")
 			time.Sleep(time.Second)
 			continue
 		} else {
-			fmt.Println(calculateHash(newBlock), " nice job!")
-			newBlock.Hash = calculateHash(newBlock)
+			fmt.Println(CalculateHash(newBlock), " nice job!")
+			newBlock.Hash = CalculateHash(newBlock)
 			break
 		}
 	}
 
 	return newBlock
 }
+func IsHashValid(hash string, difficulty int) bool {
+	prefix := strings.Repeat("0", difficulty)
+	return strings.HasPrefix(hash, prefix)
+}
+
+

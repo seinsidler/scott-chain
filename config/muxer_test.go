@@ -3,10 +3,11 @@ package config
 import (
 	"testing"
 
+	bhost "scott-chain/p2p/host/basic"
+
 	"github.com/libp2p/go-libp2p-core/host"
 	"github.com/libp2p/go-libp2p-core/peer"
 	swarmt "github.com/libp2p/go-libp2p-swarm/testing"
-	bhost "github.com/libp2p/go-libp2p/p2p/host/basic"
 
 	"github.com/libp2p/go-libp2p-core/mux"
 	yamux "github.com/libp2p/go-libp2p-yamux"

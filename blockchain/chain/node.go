@@ -9,21 +9,24 @@ import (
 	"log"
 	mrand "math/rand"
 	"os"
+	libp2p "scott-chain"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	libp2p "github.com/libp2p/go-libp2p"
-	crypto "github.com/libp2p/go-libp2p-core/crypto"
-	host "github.com/libp2p/go-libp2p-core/host"
+	"github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/host"
 	net "github.com/libp2p/go-libp2p-core/network"
 	ma "github.com/multiformats/go-multiaddr"
 )
 
+var mutex = &sync.Mutex{}
+
 // makeBasicHost creates a LibP2P host with a random peer ID listening on the
 // given multiaddress. It will use secio if secio is true.
-func makeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error) {
+func MakeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error) {
 
 	// If the seed is zero, use real cryptographic randomness. Otherwise, use a
 	// deterministic randomness source to make generated keys stay the same
@@ -73,24 +76,23 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error
 
 	return basicHost, nil
 }
-func handleStream(s net.Stream) {
+func HandleStream(s net.Stream) {
 
 	log.Println("Got a new stream!")
 
 	// Create a buffer stream for non blocking read and write.
+	
 	rw := bufio.NewReadWriter(bufio.NewReader(s), bufio.NewWriter(s))
-
-	go readData(rw)
-	go writeData(rw)
+	go ReadData(rw)
+	go WriteData(rw)
 
 	// stream 's' will stay open until you close it (or the other side closes it).
 }
-func readData(rw *bufio.ReadWriter) {
+func ReadData(rw *bufio.ReadWriter) {
 
 	for {
 		str, err := rw.ReadString('\n')
 		if err != nil {
-			fmt.Printf("dicks")
 			log.Fatal(err)
 		}
 
@@ -120,7 +122,7 @@ func readData(rw *bufio.ReadWriter) {
 		}
 	}
 }
-func writeData(rw *bufio.ReadWriter) {
+func WriteData(rw *bufio.ReadWriter) {
 
 	go func() {
 		for {
@@ -149,14 +151,15 @@ func writeData(rw *bufio.ReadWriter) {
 			log.Fatal(err)
 		}
 
+		sendData = strings.Replace(sendData, "\r", "", -1)
 		sendData = strings.Replace(sendData, "\n", "", -1)
 		bpm, err := strconv.Atoi(sendData)
 		if err != nil {
 			log.Fatal(err)
 		}
-		newBlock := generateBlock(Blockchain[len(Blockchain)-1], bpm)
+		newBlock := GenerateBlock(Blockchain[len(Blockchain)-1], bpm)
 
-		if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
+		if IsBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
 			mutex.Lock()
 			Blockchain = append(Blockchain, newBlock)
 			mutex.Unlock()

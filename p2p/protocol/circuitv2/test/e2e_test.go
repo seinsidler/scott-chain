@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/client"
-	"github.com/libp2p/go-libp2p/p2p/protocol/circuitv2/relay"
+	"scott-chain/p2p/protocol/circuitv2/client"
+	"scott-chain/p2p/protocol/circuitv2/relay"
 
 	"github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/libp2p/go-libp2p-core/host"

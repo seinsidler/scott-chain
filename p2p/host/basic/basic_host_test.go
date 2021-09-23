@@ -11,6 +11,8 @@ import (
 	"testing"
 	"time"
 
+	"scott-chain/p2p/protocol/identify"
+
 	"github.com/libp2p/go-eventbus"
 	autonat "github.com/libp2p/go-libp2p-autonat"
 	"github.com/libp2p/go-libp2p-core/event"
@@ -23,7 +25,6 @@ import (
 	"github.com/libp2p/go-libp2p-core/record"
 	"github.com/libp2p/go-libp2p-core/test"
 	swarmt "github.com/libp2p/go-libp2p-swarm/testing"
-	"github.com/libp2p/go-libp2p/p2p/protocol/identify"
 
 	ma "github.com/multiformats/go-multiaddr"
 	madns "github.com/multiformats/go-multiaddr-dns"
