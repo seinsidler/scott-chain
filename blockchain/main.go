@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	// "github.com/libp2p/go-libp2p"
 	libp2p "github.com/libp2p/go-libp2p"
 	crypto "github.com/libp2p/go-libp2p-core/crypto"
 	host "github.com/libp2p/go-libp2p-core/host"
@@ -135,7 +136,8 @@ func makeBasicHost(listenPort int, secio bool, randseed int64) (host.Host, error
 		opts = append(opts, libp2p.NoSecurity)
 	}
 
-	basicHost, err := libp2p.New(context.Background(), opts...)
+	// basicHost, err := libp2p.New(context.Background(), opts...)
+	basicHost, err := libp2p.New(opts...)
 	if err != nil {
 		return nil, err
 	}
