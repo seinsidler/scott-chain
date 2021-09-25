@@ -95,7 +95,7 @@ func ReadData(rw *bufio.ReadWriter) {
 			str, err := rw.ReadString('\n')
 			if err != nil {
 				// where the stream reset occurs 
-				log.Println(err)
+				log.Fatal(err)
 			}
 
 			if str == "" {
