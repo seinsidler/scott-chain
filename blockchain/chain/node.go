@@ -131,8 +131,10 @@ func (node Node) ReadData(rw *bufio.ReadWriter) {
 			str, err := rw.ReadString('\n')
 			if err != nil {
 				// where the stream reset occurs 
+
 				log.Println(err)
 				
+
 			}
 
 			if str == "" {
