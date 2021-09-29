@@ -128,7 +128,6 @@ func (node Node) ReadData(rw *bufio.ReadWriter) {
 	go func() {
 		
 		for {
-			fmt.Println("READ DATA")
 			str, err := rw.ReadString('\n')
 			if err != nil {
 				// where the stream reset occurs 
@@ -156,7 +155,7 @@ func (node Node) ReadData(rw *bufio.ReadWriter) {
 					}
 					// Green console color: 	\x1b[32m
 					// Reset console color: 	\x1b[0m %s\x1b[0m>
-					fmt.Printf("\x1b[32m %s\x1b[0m>", string(bytes))
+					fmt.Printf("\x1b[32m%s\x1b[0m> ", string(bytes))
 				}
 				mutex.Unlock()
 			}
@@ -167,7 +166,6 @@ func (node Node) WriteData(rw *bufio.ReadWriter) {
 
 	go func() {
 		for {
-			fmt.Println("WRITE DATA")
 			time.Sleep(5 * time.Second)
 			mutex.Lock()
 			bytes, err := json.Marshal(Blockchain)

@@ -167,6 +167,7 @@ func main() {
 	// We use a rendezvous point "meet me here" to announce our location.
 	// This is like telling your friends to meet you at the Eiffel Tower.
 	logger.Info("Announcing ourselves...")
+
 	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
 	discovery.Advertise(ctx, routingDiscovery, config.RendezvousString)
 	logger.Debug("Successfully announced!")
@@ -178,7 +179,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	// testing for kademliaDHT
 	for peer := range peerChan {
 		if peer.ID == host.ID() {
 			continue
@@ -190,6 +191,12 @@ func main() {
 
 		if err != nil {
 			logger.Warning("Connection failed:", err)
+			fmt.Print("Peer ID: ", kademliaDHT.PeerID())
+			fmt.Printf("Peer Key: ")
+			fmt.Printf("%+v\n", kademliaDHT.PeerKey())
+			fmt.Printf("\n")
+			fmt.Printf("Routing Table Check: ")
+			// fmt.Printf("%+v\n", kademliaDHT.RoutingTable().GetPeerInfos())
 			continue
 		} else {
 			// rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))

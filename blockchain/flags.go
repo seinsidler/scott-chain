@@ -52,7 +52,7 @@ func ParseFlags() (Config, error) {
 		"Unique string to identify group of nodes. Share this with your friends to let them connect with you")
 	flag.Var(&config.BootstrapPeers, "peer", "Adds a peer multiaddress to the bootstrap list")
 	flag.Var(&config.ListenAddresses, "listen", "Adds a multiaddress to the listen list")
-	flag.StringVar(&config.ProtocolID, "pid", "/chat/1.1.0", "Sets a protocol id for stream headers")
+	flag.StringVar(&config.ProtocolID, "pid", "/p2p/1.0.0", "Sets a protocol id for stream headers")
 	flag.Parse()
 
 	if len(config.BootstrapPeers) == 0 {
