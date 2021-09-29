@@ -5,16 +5,11 @@ go build
 ```
 and then
 ```bash
-./blockchain -l 10000 -secio
+./blockchain -listen /ip4/127.0.0.1/tcp/6666
 ```
+On windows, this will create an exe file to execute. For other nodes, run the same command but with a different port or number at the end of the address. For example, 6668 is a pretty good one (you got a lot of options).
 
-TODO:
-
-Fixes:
-- The carrot in the console needs to show up when a block is found on another terminal
-- automatic node discovery or persistent node discovery
-- network needs to not shut down when one node fails!
-- ensure proof of work check is happening
+Added a DHT! Yay! 
 
 Future Plans:
 - Turn the blockchain history into a state (Merkle DAG)
