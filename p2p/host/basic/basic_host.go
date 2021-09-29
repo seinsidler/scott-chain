@@ -22,8 +22,9 @@ import (
 	"github.com/libp2p/go-libp2p-core/protocol"
 	"github.com/libp2p/go-libp2p-core/record"
 
-	"scott-chain/p2p/protocol/identify"
 	"scott-chain/p2p/protocol/ping"
+
+	"scott-chain/p2p/protocol/identify"
 
 	addrutil "github.com/libp2p/go-addr-util"
 	"github.com/libp2p/go-eventbus"

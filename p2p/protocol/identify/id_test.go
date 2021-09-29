@@ -21,6 +21,7 @@ import (
 	coretest "github.com/libp2p/go-libp2p-core/test"
 
 	mocknet "scott-chain/p2p/net/mock"
+
 	"scott-chain/p2p/protocol/identify"
 	pb "scott-chain/p2p/protocol/identify/pb"
 

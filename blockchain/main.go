@@ -1,103 +1,213 @@
 package main
 
 import (
-	"scott-chain/blockchain/chain"
-
-	// "chain"
 	"context"
 	"flag"
 	"fmt"
-	"log"
+	"scott-chain/blockchain/chain"
+	"sync"
 	"time"
 
-	// "github.com/libp2p/go-libp2p"
+	"github.com/libp2p/go-libp2p"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/protocol"
+	discovery "github.com/libp2p/go-libp2p-discovery"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 
-	peer "github.com/libp2p/go-libp2p-core/peer"
-	pstore "github.com/libp2p/go-libp2p-core/peerstore"
-	ma "github.com/multiformats/go-multiaddr"
+	"github.com/ipfs/go-log/v2"
 )
 
+var logger = log.Logger("rendezvous")
+
+// func handleStream(stream network.Stream) {
+// 	logger.Info("Got a new stream!")
+
+// 	// Create a buffer stream for non blocking read and write.
+// 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
+
+// 	go readData(rw)
+// 	go writeData(rw)
+
+// 	// 'stream' will stay open until you close it (or the other side closes it).
+// }
+
+// func readData(rw *bufio.ReadWriter) {
+// 	for {
+// 		str, err := rw.ReadString('\n')
+// 		if err != nil {
+// 			fmt.Println("Error reading from buffer")
+// 			panic(err)
+// 		}
+
+// 		if str == "" {
+// 			return
+// 		}
+// 		if str != "\n" {
+// 			// Green console colour: 	\x1b[32m
+// 			// Reset console colour: 	\x1b[0m
+// 			fmt.Printf("\x1b[32m%s\x1b[0m> ", str)
+// 		}
+
+// 	}
+// }
+
+// func writeData(rw *bufio.ReadWriter) {
+// 	stdReader := bufio.NewReader(os.Stdin)
+
+// 	for {
+// 		fmt.Print("> ")
+// 		sendData, err := stdReader.ReadString('\n')
+// 		if err != nil {
+// 			fmt.Println("Error reading from stdin")
+// 			panic(err)
+// 		}
+
+// 		_, err = rw.WriteString(fmt.Sprintf("%s\n", sendData))
+// 		if err != nil {
+// 			fmt.Println("Error writing to buffer")
+// 			panic(err)
+// 		}
+// 		err = rw.Flush()
+// 		if err != nil {
+// 			fmt.Println("Error flushing buffer")
+// 			panic(err)
+// 		}
+// 	}
+// }
 const difficulty int = chain.Difficulty
 func main() {
-	
+	// establish blockchain
 	t := time.Now()
 	genesisBlock := chain.Block{}
-	genesisBlock = chain.Block{Index: 0, Timestamp: t.String(), BPM: 0, Hash: chain.CalculateHash(genesisBlock), PrevHash: "", Difficulty: difficulty, Nonce: ""}
+	genesisBlock = chain.Block{Index: 0, Timestamp: t.String(), BPM: 0, Hash: chain.CalculateHash(genesisBlock), PrevHash: "", Difficulty: difficulty}
 
 	chain.Blockchain = append(chain.Blockchain, genesisBlock)
-
-	// LibP2P code uses golog to log messages. They log with different
-	// string IDs (i.e. "swarm"). We can control the verbosity level for
-	// all loggers with:
-	// golog.SetAllLoggers("DEBUG") // Change to DEBUG for extra info
-
-	// Parse options from the command line
-	listenF := flag.Int("l", 0, "wait for incoming connections")
-	target := flag.String("d", "", "target peer to dial")
-	secio := flag.Bool("secio", false, "enable secio")
-	seed := flag.Int64("seed", 0, "set random seed for id generation")
-	flag.Parse()
-
-	if *listenF == 0 {
-		log.Fatal("Please provide a port to bind on with -l")
-	}
-
-	// Make a host that listens on the given multiaddress
-	ha, err := chain.MakeBasicHost(*listenF, *secio, *seed)
+	log.SetAllLoggers(log.LevelWarn)
+	log.SetLogLevel("rendezvous", "info")
+	help := flag.Bool("h", false, "Display Help")
+	config, err := ParseFlags()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	if *target == "" {
-		log.Println("listening for connections")
-		// Set a stream handler on host A. /p2p/1.0.0 is
-		// a user-defined protocol name.
-		ha.SetStreamHandler("/p2p/1.0.0", chain.HandleStream)
-
-		select {} // hang forever
-		/**** This is where the listener code ends ****/
-	} else {
-		ha.SetStreamHandler("/p2p/1.0.0", chain.HandleStream)
-
-		// The following code extracts target's peer ID from the
-		// given multiaddress
-		ipfsaddr, err := ma.NewMultiaddr(*target)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		pid, err := ipfsaddr.ValueForProtocol(ma.P_IPFS)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		peerid, err := peer.Decode(pid)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		// Decapsulate the /ipfs/<peerID> part from the target
-		// /ip4/<a.b.c.d>/ipfs/<peer> becomes /ip4/<a.b.c.d>
-		targetPeerAddr, _ := ma.NewMultiaddr(
-			fmt.Sprintf("/ipfs/%s", peer.Encode(peerid)))
-		targetAddr := ipfsaddr.Decapsulate(targetPeerAddr)
-
-		// We have a peer ID and a targetAddr so we add it to the peerstore
-		// so LibP2P knows how to contact it
-		ha.Peerstore().AddAddr(peerid, targetAddr, pstore.PermanentAddrTTL)
-
-		log.Println("opening stream")
-		// make a new stream from host B to host A
-		// it should be handled on host A by the handler we set above because
-		// we use the same /p2p/1.0.0 protocol
-		s, err := ha.NewStream(context.Background(), peerid, "/p2p/1.0.0")
-		if err != nil {
-			log.Fatalln(err)
-		}
-		// Create a buffered stream so that read and writes are non blocking.
-		chain.HandleStream(s)
-
-		select {} // hang forever
-
+	if *help {
+		fmt.Println("This program demonstrates a simple p2p chat application using libp2p")
+		fmt.Println()
+		fmt.Println("Usage: Run './chat in two different terminals. Let them connect to the bootstrap nodes, announce themselves and connect to the peers")
+		flag.PrintDefaults()
+		return
 	}
+
+	// var r io.Reader
+	// r = rand.Reader
+
+	// Generate a key pair for this host. We will use it
+	// to obtain a valid host ID.
+	// priv, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, r)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	opts := []libp2p.Option{
+		libp2p.ListenAddrStrings(fmt.Sprintf(config.ListenAddresses.String())),
+		// libp2p.Identity(priv),
+	}	
+
+	// // libp2p.New constructs a new libp2p Host. Other options can be added
+	// // here.
+	ctx := context.Background()
+	
+	host, err := libp2p.New(opts...)
+	if err != nil {
+		panic(err)
+	
+	}
+	node := chain.Node{Ha: host}
+	logger.Info("Host created. We are:", host.ID())
+	logger.Info(host.Addrs())
+
+	// // Set a function as stream handler. This function is called when a peer
+	// // initiates a connection and starts a stream with this peer.
+	host.SetStreamHandler(protocol.ID(config.ProtocolID), node.HandleStream)
+
+	// // Start a DHT, for use in peer discovery. We can't just make a new DHT
+	// // client because we want each peer to maintain its own local copy of the
+	// // DHT, so that the bootstrapping node of the DHT can go down without
+	// // inhibiting future peer discovery.
+	
+	kademliaDHT, err := dht.New(ctx, host)
+	if err != nil {
+		panic(err)
+	}
+
+	// // Bootstrap the DHT. In the default configuration, this spawns a Background
+	// // thread that will refresh the peer table every five minutes.
+	logger.Debug("Bootstrapping the DHT")
+	if err = kademliaDHT.Bootstrap(ctx); err != nil {
+		panic(err)
+	}
+
+	// // Let's connect to the bootstrap nodes first. They will tell us about the
+	// // other nodes in the network.
+	var wg sync.WaitGroup
+	for _, peerAddr := range config.BootstrapPeers {
+		peerinfo, _ := peer.AddrInfoFromP2pAddr(peerAddr)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := host.Connect(ctx, *peerinfo); err != nil {
+				logger.Warning(err)
+			} else {
+				logger.Info("Connection established with bootstrap node:", *peerinfo)
+			}
+		}()
+	}
+	wg.Wait()
+
+	// We use a rendezvous point "meet me here" to announce our location.
+	// This is like telling your friends to meet you at the Eiffel Tower.
+	logger.Info("Announcing ourselves...")
+
+	routingDiscovery := discovery.NewRoutingDiscovery(kademliaDHT)
+	discovery.Advertise(ctx, routingDiscovery, config.RendezvousString)
+	logger.Debug("Successfully announced!")
+
+	// Now, look for others who have announced
+	// This is like your friend telling you the location to meet you.
+	logger.Debug("Searching for other peers...")
+	peerChan, err := routingDiscovery.FindPeers(ctx, config.RendezvousString)
+	if err != nil {
+		panic(err)
+	}
+	// testing for kademliaDHT
+	for peer := range peerChan {
+		if peer.ID == host.ID() {
+			continue
+		}
+		logger.Debug("Found peer:", peer)
+
+		logger.Debug("Connecting to:", peer)
+		stream, err := host.NewStream(ctx, peer.ID, protocol.ID(config.ProtocolID))
+
+		if err != nil {
+			logger.Warning("Connection failed:", err)
+			fmt.Print("Peer ID: ", kademliaDHT.PeerID())
+			fmt.Printf("Peer Key: ")
+			fmt.Printf("%+v\n", kademliaDHT.PeerKey())
+			fmt.Printf("\n")
+			fmt.Printf("Routing Table Check: ")
+			// fmt.Printf("%+v\n", kademliaDHT.RoutingTable().GetPeerInfos())
+			continue
+		} else {
+			// rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
+
+			// go writeData(rw)
+			// go readData(rw)
+			node.HandleStream(stream)
+		}
+
+		logger.Info("Connected to:", peer)
+	}
+
+	select {}
 }

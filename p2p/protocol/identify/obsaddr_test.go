@@ -6,6 +6,7 @@ import (
 	"time"
 
 	mocknet "scott-chain/p2p/net/mock"
+
 	"scott-chain/p2p/protocol/identify"
 
 	"github.com/libp2p/go-eventbus"
